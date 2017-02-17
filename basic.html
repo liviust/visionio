@@ -2,24 +2,21 @@
 <html>
 
 <head>
-    <title>Compare</title>
+    <title>Basic</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link href="visionio.min.css" rel="stylesheet">
-    <style type="text/css">.parent {width: 50%;}</style>
+    <style type="text/css">.parent {width: 100%;}</style>
 </head>
 
 <body>
     <div id="main">
-        <div class="parent"><div class="panzoom"><img src="https://tinyurl.com/np2ljsx"></div></div>
         <div class="parent"><div class="panzoom"><img src="https://tinyurl.com/gulaopp"></div></div>
     </div>
     <script src="visionio.min.js"></script>
     <script>
     (function() {
         var $section = $('#main');
-        var $panzoom = $section.find('.panzoom').panzoom({
-            $set: $section.find('.parent > div')
-        });
+        var $panzoom = $section.find('.panzoom').panzoom();
         $panzoom.parent().on('mousewheel.focal', function(e) {
             e.preventDefault();
             var delta = e.delta || e.originalEvent.wheelDelta;
