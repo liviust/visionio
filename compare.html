@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Compare</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style type="text/css">
+    body {
+        margin: 0;
+    }
+
+    .parent {
+        float: left;
+        width: 50%;
+        background-image: -moz-linear-gradient(45deg, #eee 25%, transparent 25%), -moz-linear-gradient(-45deg, #eee 25%, transparent 25%), -moz-linear-gradient(45deg, transparent 75%, #eee 75%), -moz-linear-gradient(-45deg, transparent 75%, #eee 75%);
+        background-image: -webkit-gradient(linear, 0 100%, 100% 0, color-stop(.25, #eee), color-stop(.25, transparent)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(.25, #eee), color-stop(.25, transparent)), -webkit-gradient(linear, 0 100%, 100% 0, color-stop(.75, transparent), color-stop(.75, #eee)), -webkit-gradient(linear, 0 0, 100% 100%, color-stop(.75, transparent), color-stop(.75, #eee));
+        -moz-background-size: 100px 100px;
+        background-size: 100px 100px;
+        -webkit-background-size: 100px 101px;
+        background-position: 0 0, 50px 0, 50px -50px, 0px 50px;
+    }
+
+    .parent > div {
+        display: inline-block;
+        width: 100%;
+        height: 100vh;
+    }
+
+    .parent img {
+        width: 100%;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <div class="parent">
+            <div class="panzoom">
+                <img src="var/1.JPG">
+            </div>
+        </div>
+        <div class="parent">
+            <div class="panzoom">
+                <img src="var/2.JPG">
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+    <script>
+    (function() {
+        var $section = $('#main');
+        var $panzoom = $section.find('.panzoom').panzoom({
+            $set: $section.find('.parent > div')
+        });
+        $panzoom.parent().on('mousewheel.focal', function(e) {
+            e.preventDefault();
+            var delta = e.delta || e.originalEvent.wheelDelta;
+            var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
+            $panzoom.panzoom('zoom', zoomOut, {
+                increment: 0.1,
+                animate: false,
+                focal: e,
+                linearZoom: true
+            });
+        });
+    })();
+    </script>
+</body>
+
+</html>
