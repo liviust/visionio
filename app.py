@@ -25,7 +25,13 @@ def allow(filename, allowed=['png', 'jpg', 'jpeg', 'gif']):
 
 def process(filename):
     img = cv2.imread(filename)
-    return {'shape': img.shape}
+    result = cv2.Canny(img, 100, 200)
+    fnTerms = filename.rsplit('.', 1)
+    imgPath = '.'.join((fnTerms[0], 'result', fnTerms[1]))
+    cv2.imwrite(imgPath, result)
+    imgSrc = url_for('static', filename='/'.join((
+        uploadFolder, os.path.split(imgPath)[1])))
+    return {'img': imgSrc}
 
 # ----------------------------------------------------------------------------
 

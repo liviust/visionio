@@ -72,7 +72,7 @@
                 reader.readAsDataURL(file);
             },
             uploadFinished: function(i, file, response) {
-                console.log(response);
+                image.attr('src', response.result.img);
             },
             progressUpdated: function(i, file, progress) {
 
