@@ -4,7 +4,7 @@
 <head>
     <title>Basic</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link href="static/css/visionio.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/visionio.min.css') }}" rel="stylesheet">
     <style type="text/css">
     .parent {
         width: 100%;
@@ -14,11 +14,11 @@
 
 <body>
     <div id="main">
-        <div class="parent">
-            <div class="panzoom dropbox"><img /></div>
-        </div>
+        <div class="parent"><div class="panzoom dropbox">
+            <img {% if imgPath %}src="{{ imgPath }}"{% else %}{% endif %} />
+        </div></div>
     </div>
-    <script type="text/javascript" src="static/js/visionio.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/visionio.min.js') }}"></script>
     <script>
     (function() {
         var $section = $('#main');

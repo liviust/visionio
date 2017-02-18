@@ -4,13 +4,16 @@
 import os
 import cv2
 from datetime import datetime
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, url_for
+from flask import send_from_directory
 
 # ----------------------------------------------------------------------------
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-app.config['UPLOAD_FOLDER'] = 'var/uploads'
+
+uploadFolder = 'upload'
+app.config['UPLOAD_FOLDER'] = os.path.join('static', uploadFolder)
 
 # ----------------------------------------------------------------------------
 
@@ -47,6 +50,13 @@ def upload():
             r = process(filename)
             return jsonify({'success': True, 'result': r})
     return jsonify({'success': False})
+
+# ----------------------------------------------------------------------------
+
+@app.route('/view/<path:path>', methods=['GET'])
+def view(path):
+    imgPath = url_for('static', filename='/'.join((uploadFolder, path)))
+    return render_template('basic.html', imgPath=imgPath)
 
 # ----------------------------------------------------------------------------
 
