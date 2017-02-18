@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import cv2
 from datetime import datetime
 from flask import Flask, render_template, jsonify, request
 
@@ -9,13 +10,19 @@ from flask import Flask, render_template, jsonify, request
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
+app.config['UPLOAD_FOLDER'] = 'var/uploads'
 
 # ----------------------------------------------------------------------------
 
 def allow(filename, allowed=['png', 'jpg', 'jpeg', 'gif']):
     return '.' in filename and filename.rsplit(
         '.', 1)[1].lower() in allowed
+
+# ----------------------------------------------------------------------------
+
+def process(filename):
+    img = cv2.imread(filename)
+    return {'shape': img.shape}
 
 # ----------------------------------------------------------------------------
 
@@ -35,9 +42,10 @@ def upload():
                 app.config['UPLOAD_FOLDER'],
                 '%s.%s' % (
                     now.strftime('%Y-%m-%d-%H-%M-%S-%f'),
-                    file.filename.rsplit('.', 1)[1]))
+                    file.filename.rsplit('.', 1)[1].lower()))
             file.save(filename)
-            return jsonify({'success': True})
+            r = process(filename)
+            return jsonify({'success': True, 'result': r})
     return jsonify({'success': False})
 
 # ----------------------------------------------------------------------------

@@ -15,7 +15,7 @@
 <body>
     <div id="main">
         <div class="parent">
-            <div class="panzoom dropbox"><img src="https://tinyurl.com/gulaopp"></div>
+            <div class="panzoom dropbox"><img /></div>
         </div>
     </div>
     <script type="text/javascript" src="static/js/visionio.min.js"></script>
@@ -72,7 +72,7 @@
                 reader.readAsDataURL(file);
             },
             uploadFinished: function(i, file, response) {
-
+                console.log(response);
             },
             progressUpdated: function(i, file, progress) {
 
