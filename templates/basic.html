@@ -43,9 +43,6 @@
             maxfiles: 10,
             maxfilesize: 5,
             url: '/upload',
-            uploadFinished: function(i, file, response) {
-
-            },
             error: function(err, file) {
                 switch (err) {
                     case 'BrowserNotSupported':
@@ -73,6 +70,9 @@
                     image.attr('src', e.target.result);
                 };
                 reader.readAsDataURL(file);
+            },
+            uploadFinished: function(i, file, response) {
+
             },
             progressUpdated: function(i, file, progress) {
 
