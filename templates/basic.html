@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Basic</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="static/css/visionio.min.css" rel="stylesheet">
+    <style type="text/css">
+    .parent {
+        width: 100%;
+    }
+    </style>
+</head>
+
+<body>
+    <div id="main">
+        <div class="parent">
+            <div class="panzoom dropbox"><img src="https://tinyurl.com/gulaopp"></div>
+        </div>
+    </div>
+    <script type="text/javascript" src="static/js/visionio.min.js"></script>
+    <script>
+    (function() {
+        var $section = $('#main');
+        var $panzoom = $section.find('.panzoom').panzoom();
+        $panzoom.parent().on('mousewheel.focal', function(e) {
+            e.preventDefault();
+            var delta = e.delta || e.originalEvent.wheelDelta;
+            var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
+            $panzoom.panzoom('zoom', zoomOut, {
+                increment: 0.1,
+                animate: false,
+                focal: e,
+                linearZoom: true
+            });
+        });
+
+        var dropbox = $('.dropbox'),
+            image = $('img', dropbox);
+        dropbox.filedrop({
+            fallback_id: 'upload_button',
+            paramname: 'file',
+            maxfiles: 10,
+            maxfilesize: 5,
+            url: '/upload',
+            uploadFinished: function(i, file, response) {
+
+            },
+            error: function(err, file) {
+                switch (err) {
+                    case 'BrowserNotSupported':
+                        alert('Your browser does not support HTML5 file uploads!');
+                        break;
+                    case 'TooManyFiles':
+                        alert('Too many files! Please select ' + this.maxfiles + ' at most!');
+                        break;
+                    case 'FileTooLarge':
+                        alert(file.name + ' is too large! The size is limited to ' + this.maxfilesize + 'MB.');
+                        break;
+                    default:
+                        break;
+                }
+            },
+            beforeEach: function(file) {
+                if (!file.type.match(/^image\//)) {
+                    alert('Only images are allowed!');
+                    return false;
+                }
+            },
+            uploadStarted: function(i, file, len) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    image.attr('src', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            },
+            progressUpdated: function(i, file, progress) {
+
+            }
+        });
+    })();
+    </script>
+</body>
+
+</html>
