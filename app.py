@@ -9,6 +9,11 @@ from flask import send_from_directory
 
 # ----------------------------------------------------------------------------
 
+def img2imgProcess(img):
+    return cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+# ----------------------------------------------------------------------------
+
 app = Flask(__name__)
 app.config.from_object(__name__)
 
@@ -28,12 +33,6 @@ def getUploadPath(filename):
         app.config['UPLOAD_FOLDER'],
         '%s.%s' % (datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f'),
                    filename.rsplit('.', 1)[1].lower()))
-
-# ----------------------------------------------------------------------------
-
-def img2imgProcess(img):
-    resultImg = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    return resultImg
 
 # ----------------------------------------------------------------------------
 
