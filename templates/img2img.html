@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Basic</title>
+    <title>image -> image</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link href="{{ url_for('static', filename='css/visionio.min.css') }}" rel="stylesheet">
     <style type="text/css">
@@ -14,9 +14,7 @@
 
 <body>
     <div id="main">
-        <div class="parent"><div class="panzoom dropbox">
-            <img {% if imgPath %}src="{{ imgPath }}"{% else %}{% endif %} />
-        </div></div>
+        <div class="parent"><div class="panzoom dropbox"><img /></div></div>
     </div>
     <script type="text/javascript" src="{{ url_for('static', filename='js/visionio.min.js') }}"></script>
     <script>
@@ -42,7 +40,7 @@
             paramname: 'file',
             maxfiles: 10,
             maxfilesize: 5,
-            url: '/upload',
+            url: '/io/img2img',
             error: function(err, file) {
                 switch (err) {
                     case 'BrowserNotSupported':
@@ -72,7 +70,13 @@
                 reader.readAsDataURL(file);
             },
             uploadFinished: function(i, file, response) {
-                image.attr('src', response.result.img);
+                if (response.success) {
+                    image.attr('src', response.info.img);
+                }
+                else {
+                    image.attr('src', '');
+                    alert(response.info);
+                }
             },
             progressUpdated: function(i, file, progress) {
 

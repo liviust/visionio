@@ -23,46 +23,45 @@ def allow(filename, allowed=['png', 'jpg', 'jpeg', 'gif']):
 
 # ----------------------------------------------------------------------------
 
-def process(filename):
-    img = cv2.imread(filename)
-    result = cv2.Canny(img, 100, 200)
-    fnTerms = filename.rsplit('.', 1)
-    imgPath = '.'.join((fnTerms[0], 'result', fnTerms[1]))
-    cv2.imwrite(imgPath, result)
-    imgSrc = url_for('static', filename='/'.join((
-        uploadFolder, os.path.split(imgPath)[1])))
-    return {'img': imgSrc}
+def getUploadPath(filename):
+    return os.path.join(
+        app.config['UPLOAD_FOLDER'],
+        '%s.%s' % (datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f'),
+                   filename.rsplit('.', 1)[1].lower()))
 
 # ----------------------------------------------------------------------------
 
-@app.route('/')
-def basic():
-    return render_template('basic.html')
+def img2imgProcess(img):
+    resultImg = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    return resultImg
 
 # ----------------------------------------------------------------------------
 
-@app.route('/upload', methods=['POST'])
-def upload():
-    if request.method == 'POST':
+@app.route('/io/<mode>', methods=['GET', 'POST'])
+def io(mode):
+    if request.method not in ('GET', 'POST'):
+        abort(404)
+    if mode not in ('img2img', ):
+        abort(404)
+    if request.method == 'GET':
+        return render_template('%s.html' % mode)
+    elif request.method == 'POST':
         file = request.files['file']
         if file and allow(file.filename):
-            now = datetime.now()
-            filename = os.path.join(
-                app.config['UPLOAD_FOLDER'],
-                '%s.%s' % (
-                    now.strftime('%Y-%m-%d-%H-%M-%S-%f'),
-                    file.filename.rsplit('.', 1)[1].lower()))
-            file.save(filename)
-            r = process(filename)
-            return jsonify({'success': True, 'result': r})
-    return jsonify({'success': False})
-
-# ----------------------------------------------------------------------------
-
-@app.route('/view/<path:path>', methods=['GET'])
-def view(path):
-    imgPath = url_for('static', filename='/'.join((uploadFolder, path)))
-    return render_template('basic.html', imgPath=imgPath)
+            path = getUploadPath(file.filename)
+            file.save(path)
+            if mode == 'img2img':
+                img = cv2.imread(path)
+                resultImg = img2imgProcess(img)
+                fnTerms = path.rsplit('.', 1)
+                imgPath = '.'.join((fnTerms[0], 'result', fnTerms[1]))
+                cv2.imwrite(imgPath, resultImg)
+                imgURL = url_for('static', filename='/'.join((
+                    uploadFolder, os.path.split(imgPath)[1])))
+                result = {'img': imgURL}
+            return jsonify({'success': True, 'info': result})
+        else:
+            return jsonify({'success': False, 'info': 'invalid file(s)'})
 
 # ----------------------------------------------------------------------------
 
