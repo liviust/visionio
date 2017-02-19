@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>image + image -> image + image</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="{{ url_for('static', filename='css/visionio.min.css') }}" rel="stylesheet">
+    <style type="text/css">.parent {width: 50%;}</style>
+</head>
+
+<body>
+    <div id="main">
+        <div class="parent"><div class="panzoom dropbox"><img /></div></div>
+        <div class="parent"><div class="panzoom dropbox"><img /></div></div>
+    </div>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/visionio.min.js') }}"></script>
+    <script>
+    (function() {
+        var $section = $('#main');
+        var $panzoom = $section.find('.panzoom').panzoom({
+            $set: $section.find('.parent > div')
+        });
+        $panzoom.parent().on('mousewheel.focal', function(e) {
+            e.preventDefault();
+            var delta = e.delta || e.originalEvent.wheelDelta;
+            var zoomOut = delta ? delta < 0 : e.originalEvent.deltaY > 0;
+            $panzoom.panzoom('zoom', zoomOut, {
+                increment: 0.1,
+                animate: false,
+                focal: e,
+                linearZoom: true
+            });
+        });
+        $('.dropbox').each(function(i, obj) {
+            var dropbox = $(this);
+            var image = $('img', dropbox);
+            dropbox.filedrop({
+                fallback_id: 'upload_button',
+                paramname: 'file',
+                maxfiles: 10,
+                maxfilesize: 5,
+                url: '/io/imgimg2imgimg',
+                error: function(err, file) {
+                    switch (err) {
+                        case 'BrowserNotSupported':
+                            alert('Your browser does not support HTML5 file uploads!');
+                            break;
+                        case 'TooManyFiles':
+                            alert('Too many files! Please select ' + this.maxfiles + ' at most!');
+                            break;
+                        case 'FileTooLarge':
+                            alert(file.name + ' is too large! The size is limited to ' + this.maxfilesize + 'MB.');
+                            break;
+                        default:
+                            break;
+                    }
+                },
+                beforeEach: function(file) {
+                    if (!file.type.match(/^image\//)) {
+                        alert('Only images are allowed!');
+                        return false;
+                    }
+                },
+                uploadStarted: function(i, file, len) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        image.attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                },
+                uploadFinished: function(i, file, response) {
+                    if (response.success) {
+                        image.attr('src', response.info.img);
+                    }
+                    else {
+                        image.attr('src', '');
+                        alert(response.info);
+                    }
+                },
+                progressUpdated: function(i, file, progress) {
+
+                }
+            });
+        });
+    })();
+    </script>
+</body>
+
+</html>

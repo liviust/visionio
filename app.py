@@ -4,7 +4,7 @@
 import os
 import cv2
 from datetime import datetime
-from flask import Flask, render_template, jsonify, request, url_for
+from flask import Flask, render_template, jsonify, request, url_for, abort
 from flask import send_from_directory
 
 # ----------------------------------------------------------------------------
@@ -38,9 +38,7 @@ def getUploadPath(filename):
 
 @app.route('/io/<mode>', methods=['GET', 'POST'])
 def io(mode):
-    if request.method not in ('GET', 'POST'):
-        abort(404)
-    if mode not in ('img2img', ):
+    if mode not in ('img2img', 'imgimg2imgimg'):
         abort(404)
     if request.method == 'GET':
         return render_template('%s.html' % mode)
@@ -49,7 +47,7 @@ def io(mode):
         if file and allow(file.filename):
             path = getUploadPath(file.filename)
             file.save(path)
-            if mode == 'img2img':
+            if mode == 'img2img' or mode == 'imgimg2imgimg':
                 img = cv2.imread(path)
                 resultImg = img2imgProcess(img)
                 fnTerms = path.rsplit('.', 1)
